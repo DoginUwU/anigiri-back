@@ -1,3 +1,5 @@
+import { ISearchItem } from "./search";
+
 interface IPostEngine {
   id: string;
 }
@@ -12,6 +14,7 @@ interface IPost {
   artist?: string;
   copyright?: string;
   tags?: Array<string>;
+  sames?: Array<ISearchItem>;
 }
 
 export type { IPostParams, IPostEngine, IPost };

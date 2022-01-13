@@ -1,7 +1,7 @@
 import { AxiosRequestHeaders } from "axios";
 import { CheerioAPI } from "cheerio";
 import { IPost, IPostEngine } from "../../@types/post";
-import { ISearch, ISearchEngine } from "../../@types/search";
+import { ISearch, ISearchEngine, ISearchItem } from "../../@types/search";
 import { getPage } from "../../utils/page";
 import { queryToJson } from "../../utils/url";
 import Engine from "../engine";
@@ -78,15 +78,39 @@ class Gelbooru extends Engine {
       .map((item) => {
         return search(item).find("a").last().text();
       });
+    
+    let sames: ISearchItem[] = [];
+    
+    search(".mainBodyPadding")
+      .find("div")
+      .toArray()
+      .forEach((div) => {
+        if (div.attribs.style === "width: 100%;") {
+          sames = search(div)
+            .find("a")
+            .toArray()
+            .map((item) => {
+              return {
+                id: item.attribs.href.replace(
+                  "index.php?page=post&s=view&id=",
+                  ""
+                ),
+                url: item.attribs.href,
+                image: search(item).find("img").attr("src"),
+              } as ISearchItem;
+            });
+        }
+      });
 
     if (!image) throw new Error("Image not found");
 
     return {
-      id,
+      id: String(id),
       image,
       artist,
       copyright,
       tags,
+      sames
     };
   }
 }

@@ -24,4 +24,4 @@ interface ISearchItem {
     tags?: string;
 }
 
-export type { ISearchParams, ISearch, ISearchEngine };
+export type { ISearchParams, ISearch, ISearchEngine, ISearchItem };
