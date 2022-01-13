@@ -1,3 +1,4 @@
+import { AxiosRequestHeaders } from "axios";
 import { CheerioAPI } from "cheerio";
 import { IPost, IPostEngine } from "../../@types/post";
 import { ISearch, ISearchEngine } from "../../@types/search";
@@ -6,6 +7,10 @@ import { queryToJson } from "../../utils/url";
 import Engine from "../engine";
 
 class Gelbooru extends Engine {
+  headers: AxiosRequestHeaders = {
+    Cookie: "fringeBenefits=yup;",
+  };
+
   constructor() {
     super("gelbooru", "https://gelbooru.com");
   }
@@ -31,7 +36,7 @@ class Gelbooru extends Engine {
     const address = `index.php?page=post&s=list&tags=${tags}&pid=${
       (parseInt(page) - 1) * 42
     }`;
-    const search = await getPage(this.url, address);
+    const search = await getPage(this.url, address, this.headers);
 
     const images = this.getImages(search);
 
@@ -58,7 +63,7 @@ class Gelbooru extends Engine {
 
   async getPostById({ id }: IPostEngine): Promise<IPost> {
     const address = `index.php?page=post&s=view&id=${id}`;
-    const search = await getPage(this.url, address);
+    const search = await getPage(this.url, address, this.headers);
 
     const image = search("picture").first().find("img").attr("src");
     const artist = search(".tag-type-artist").first().find("a").last().text();
@@ -66,20 +71,22 @@ class Gelbooru extends Engine {
       .first()
       .find("a")
       .last()
-    .text();
-      
-    const tags = search(".tag-type-general").toArray().map((item) => {
+      .text();
+
+    const tags = search(".tag-type-general")
+      .toArray()
+      .map((item) => {
         return search(item).find("a").last().text();
-    });
-      
-    if(!image) throw new Error("Image not found");
-      
+      });
+
+    if (!image) throw new Error("Image not found");
+
     return {
       id,
       image,
       artist,
       copyright,
-      tags
+      tags,
     };
   }
 }
