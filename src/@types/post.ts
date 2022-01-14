@@ -13,6 +13,7 @@ interface IPost {
   image: string;
   artist?: string;
   copyright?: string;
+  characters?: Array<string>;
   tags?: Array<string>;
   sames?: Array<ISearchItem>;
 }

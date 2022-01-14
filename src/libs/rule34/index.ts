@@ -7,16 +7,14 @@ import { queryToJson } from "../../utils/url";
 import Engine from "../engine";
 
 class Gelbooru extends Engine {
-  headers: AxiosRequestHeaders = {
-    Cookie: "fringeBenefits=yup;",
-  };
+  headers: AxiosRequestHeaders = {};
 
   constructor() {
-    super("gelbooru", "https://gelbooru.com");
+    super("rule34", "https://rule34.xxx/");
   }
 
   getImages(search: CheerioAPI) {
-    return search("article")
+    return search("span.thumb")
       .toArray()
       .map((item) => {
         const url = search(item).find("a").attr("href");
@@ -65,7 +63,7 @@ class Gelbooru extends Engine {
     const address = `index.php?page=post&s=view&id=${id}`;
     const search = await getPage(this.url, address, this.headers);
 
-    const image = search("picture").first().find("img").attr("src");
+    const image = search("#image").first().attr("src");
     const artist = search(".tag-type-artist").first().find("a").last().text();
     const copyright = search(".tag-type-copyright")
       .first()
@@ -76,7 +74,7 @@ class Gelbooru extends Engine {
       .toArray()
       .map((item) => {
         return search(item).find("a").last().text();
-     });
+      });
     const tags = search(".tag-type-general")
       .toArray()
       .map((item) => {
